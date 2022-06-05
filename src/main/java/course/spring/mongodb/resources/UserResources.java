@@ -5,11 +5,10 @@ import course.spring.mongodb.dto.UserDTO;
 import course.spring.mongodb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,17 +20,25 @@ public class UserResources {
     @Autowired
     private UserService userService;
     
+    @PostMapping
+    public ResponseEntity insertUser(@RequestBody UserDTO newUserDto){
+        User newUser = this.userService.fromDto(newUserDto);
+        newUser = this.userService.insertUser(newUser);
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}").buildAndExpand(newUser.getId()).toUri();
+        return ResponseEntity.created(uri).build();
+    }
+    
     @GetMapping
     public ResponseEntity findAll() {
         List<User> list = this.userService.findAll();
         List<UserDTO> listDto = list.stream().map(x -> new UserDTO(x)).toList();
-        return ResponseEntity.status(200).body(listDto);
+        return ResponseEntity.ok().body(listDto);
     }
     
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable String id) {
         User user = this.userService.findById(id);
-        return ResponseEntity.status(200).body(new UserDTO(user));
+        return ResponseEntity.ok().body(new UserDTO(user));
     }
     
 }
