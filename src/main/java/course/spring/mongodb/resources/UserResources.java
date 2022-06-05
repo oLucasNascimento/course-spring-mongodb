@@ -1,6 +1,7 @@
 package course.spring.mongodb.resources;
 
 import course.spring.mongodb.domain.User;
+import course.spring.mongodb.dto.UserDTO;
 import course.spring.mongodb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,9 @@ public class UserResources {
     
     @GetMapping
     public ResponseEntity findAll() {
-        return ResponseEntity.ok().body(this.userService.findAll());
+        List<User> list = this.userService.findAll();
+        List<UserDTO> listDto = list.stream().map(x -> new UserDTO(x)).toList();
+        return ResponseEntity.ok().body(listDto);
     }
     
 }
