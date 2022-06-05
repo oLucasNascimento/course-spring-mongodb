@@ -9,13 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserResources {
+public class UserResource {
     
     @Autowired
     private UserService userService;
@@ -44,6 +42,14 @@ public class UserResources {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@PathVariable String id) {
         this.userService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity updateById(@PathVariable String id, @RequestBody UserDTO userDto){
+        User newUser = this.userService.fromDto(userDto);
+        newUser.setId(id);
+        newUser = this.userService.updateUser(newUser);
         return ResponseEntity.noContent().build();
     }
     
